@@ -1,0 +1,21 @@
+* Build Universal Empire With This Engine
+
+** Scripting Engine (Python)
+** Networking Support
+** Sound (if supported)
+** Color (if supported)
+** Quests
+** Character Interaction
+** Object Manipulation
+** Navigation
+** Save/Load System
+** Client/Server Model for MMOs
+** Command Line / OR Graphical Emulator
+** Advanced Drawing Libraries
+** Plugins
+** Ability to add plugins to already started game / remove them without corruption
+
+
+Basic Units:::
+
+MapUnit, AdventureObject, AdventureActor, Quest
