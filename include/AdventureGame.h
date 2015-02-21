@@ -26,8 +26,13 @@ public:
 
 	int mainLoop(AbstractClient *cli);
 
+	static void __defaultKeyboardHandler(void *self, char c);
+	void defaultKeyboardHandler(char c);
+
 private:
 	RunType _rt;
+	bool _quit;
+	long long _ticks;
 };
 
 #endif /* ADVENTUREGAME_H_ */

@@ -29,8 +29,12 @@ public:
 	DrawLayerGroup printFormattedTextWW(DrawLayer *initialL, const char* format, ... );
 	DrawLayerGroup printFormattedTextCenter(DrawLayer *initialL, const char* format, ... );
 
+	void onLayerModified();
+	bool needsPaint();
+
 private:
 	int _wid, _hei;
+	bool _needsRefresh;
 };
 
 #endif /* DRAWER_H_ */

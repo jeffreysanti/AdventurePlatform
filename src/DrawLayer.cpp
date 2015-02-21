@@ -8,17 +8,19 @@
  */
 
 #include <DrawLayer.h>
+#include <Drawer.h>
 #include <cstring>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 
-DrawLayer::DrawLayer(int wid, int hei) {
+DrawLayer::DrawLayer(Drawer* drawer, int wid, int hei) {
 	_wid = wid;
 	_hei = hei;
 	_color = GRAY;
 	_offx = 0;
 	_offy = 0;
+	_drawer = drawer;
 	_buffer = new char*[_hei];
 	for(int i=0; i<_hei; i++){
 		_buffer[i] = new char[_wid];
@@ -52,6 +54,7 @@ void DrawLayer::fillRect(int x0, int y0, int x1, int y1, char c){
 void DrawLayer::setChar(int x, int y, char c){
 	if(x >= 0 && x < _wid && y >= 0 && y < _hei){
 		_buffer[y][x] = c;
+		_drawer->onLayerModified();
 	}
 }
 
@@ -143,6 +146,7 @@ void DrawLayer::printTextCenter(const char* format, ... ){
 
 void DrawLayer::setColor(Color c){
 	_color = c;
+	_drawer->onLayerModified();
 }
 Color DrawLayer::getColor(){
 	return _color;
@@ -151,6 +155,7 @@ Color DrawLayer::getColor(){
 void DrawLayer::setOffset(int offx, int offy){
 	_offx = offx;
 	_offy = offy;
+	_drawer->onLayerModified();
 }
 int DrawLayer::getOffsetX(){
 	return _offx;

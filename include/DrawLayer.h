@@ -35,10 +35,11 @@ enum Color{
 	WHITE
 };
 
+class Drawer;
 
 class DrawLayer {
 public:
-	DrawLayer(int wid, int hei);
+	DrawLayer(Drawer *drawer, int wid, int hei);
 	virtual ~DrawLayer();
 
 	void solidFill(char c = ' ');
@@ -65,6 +66,7 @@ private:
 	int _wid, _hei;
 
 	char **_buffer;
+	Drawer *_drawer;
 };
 
 class DrawLayerGroup{

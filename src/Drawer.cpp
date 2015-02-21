@@ -15,6 +15,7 @@
 Drawer::Drawer(int wid, int hei, Color bg) {
 	_wid = wid;
 	_hei = hei;
+	_needsRefresh = false;
 	DrawLayer *layer = newLayer();
 	layer->setColor(bg);
 	layer->solidFill(' ');
@@ -32,7 +33,7 @@ DrawLayer *Drawer::newLayer()
 
 DrawLayer *Drawer::newLayer(int wid, int hei)
 {
-	DrawLayer *layer = new DrawLayer(wid, hei);
+	DrawLayer *layer = new DrawLayer(this, wid, hei);
 	_L.push_back(layer);
 	return layer;
 }
@@ -194,5 +195,15 @@ DrawLayerGroup Drawer::printFormattedTextCenter(DrawLayer *layer, const char* fo
 	}
 	layer->printTextCenter("%s", bufferNew);
 	return DrawLayerGroup(ls);
+}
+
+void Drawer::onLayerModified(){
+	_needsRefresh = true;
+}
+
+bool Drawer::needsPaint(){
+	bool ret = _needsRefresh;
+	_needsRefresh = false;
+	return ret;
 }
 

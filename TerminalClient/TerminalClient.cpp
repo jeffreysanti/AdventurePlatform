@@ -9,44 +9,63 @@
 
 #include "TerminalClient.h"
 
+#ifdef __linux__
+
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef __linux__
-//#include <ncurses.h>
+#include <string.h>
+#include <iostream>
 #include <curses.h>
 #include <term.h>
 #include <error.h>
-#endif
+#include <signal.h>
+#include <unistd.h>
+#include <poll.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 static char termbuf[2048];
-char buf2[30];
+static char buf2[30];
+static struct termios oldterm, curterm;
+static bool contin = true;
+
+static void handleSignal(int signo){
+	tcsetattr(0, TCSANOW, &oldterm);
+	contin = false;
+}
+
 
 TerminalClient::TerminalClient() {
-	// TODO Auto-generated constructor stub
-
 	int wid = 20;
 	int hei = 20;
-#ifdef __linux__
-	//initscr();
-	//start_color();
+
+	// Save console state, and set up signals
+	tcgetattr(0, &oldterm);
+	struct sigaction signalHndlr;
+	memset(&signalHndlr, 0, sizeof(struct sigaction));
+	signalHndlr.sa_handler = handleSignal;
+	sigaction(SIGINT, &signalHndlr, NULL);
+	sigaction(SIGQUIT, &signalHndlr, NULL);
+	sigaction(SIGTERM, &signalHndlr, NULL);
+	memset(&signalHndlr, 0, sizeof(struct sigaction));
+	signalHndlr.sa_handler = SIG_IGN;
+	sigaction(SIGTTOU, &signalHndlr, NULL);
+
 	char *termtype = getenv("TERM");
 
 	if (tgetent(termbuf, termtype) < 0) {
 		error(EXIT_FAILURE, 0, "Could not access the termcap data base.\n");
 	}
-	hei = tgetnum("li");
+	hei = tgetnum("li")-1; // last line for input box
 	wid = tgetnum("co");
-	//getmaxyx(stdscr, hei, wid);
-#endif
 	_drawer = new Drawer(wid, hei, BLACK);
 }
 
 TerminalClient::~TerminalClient() {
 	delete _drawer;
-#ifdef __linux__
-	//endwin();
-#endif
 }
 
 inline std::string ColorToCharSeq(Color fg, Color bg){
@@ -91,9 +110,10 @@ inline std::string ColorToCharSeq(Color fg, Color bg){
 
 void TerminalClient::paint()
 {
-#ifdef __linux__
-	puts(tgetstr("cl", ((char**)&buf2)));
-#endif
+
+	if(!_drawer->needsPaint())
+		return;
+
 	Color oldFG=BROWN, oldBG=BLACK;
 	for(int y=0; y<_drawer->getHeight(); y++){
 		for(int x=0; x<_drawer->getWidth(); x++){
@@ -115,10 +135,69 @@ void TerminalClient::paint()
 			}
 		}
 	}
+	// command bar
+	printf("\033[%d;%df", _drawer->getHeight()+1, 0);
+	printf("%s", ColorToCharSeq(WHITE, BLACK).c_str());
+	for(int i=0; i<_drawer->getWidth(); i++)
+		printf(" ");
+	fflush(stdout);
+}
+
+void TerminalClient::disableInput(){
+	AbstractClient::disableInput();
+	tcgetattr(0, &curterm);
+	curterm.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(0, TCSANOW, &curterm);
+}
+
+void TerminalClient::enableKeyInput(void (*callback)(void*,char), void *obj){
+	AbstractClient::enableKeyInput(callback, obj);
+	tcgetattr(0, &curterm);
+	curterm.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(0, TCSANOW, &curterm);
+}
+
+std::string TerminalClient::inputGetLine(){
+
+	printf("\033[%d;%df", _drawer->getHeight()+1, 0);
+	printf("%s", ColorToCharSeq(WHITE, BLACK).c_str());
 	fflush(stdout);
 
-#ifdef __linux__
-	//refresh();
-#endif
+	static struct termios preLine, tmp;
+	tcgetattr(0, &preLine);
+	tcgetattr(0, &tmp);
+
+	tmp.c_lflag |= (ICANON | ECHO);
+	tcsetattr(0, TCSANOW, &tmp);
+
+	char *s = readline(" > ");
+	add_history(s);
+	std::string ret = std::string(s);
+	free(s);
+
+	tcsetattr(0, TCSANOW, &preLine);
+	return ret;
 }
+
+bool TerminalClient::processInput(){
+	// poll for input
+	struct pollfd pfds[1];
+	pfds[0].fd = 0;
+	pfds[0].events = POLLIN;
+	int sz = poll(pfds, 1, 0);
+
+	// consume input & propogate it to where it is requested
+	if (sz > 0) {
+		char c;
+		read(0, &c, 1);
+		if(_im == IM_KEY_ACCEPT){
+			_keyInCallback(_keyInCallbackObj, c);
+		}
+	}
+	return contin;
+}
+
+
+#endif // __linux__
+
 
