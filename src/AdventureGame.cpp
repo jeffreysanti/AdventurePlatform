@@ -43,7 +43,7 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 		//layer->printTextWW("This is a test message. A most interesting message for information."
 		//		" What can one do with such wisdom from %d this block of text?", 1729);
 
-		cli->getDrawer()->printFormattedTextWW(layer, "<5>This is a test message. A <G>most<5> interesting"
+		cli->getDrawer()->printFormattedTextWW(layer, "<5>This is a test message. A <D>most<5> interesting"
 						" message for information."
 						" What can one do with such wisdom from %d this block of text?", 1729);
 

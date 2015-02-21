@@ -28,6 +28,7 @@ int main(int argc, char** argv)
 	printf("Value: %d", five_squared);*/
 
 	TerminalClient cli;
+	cli.promptForColorSupport();
 
 	AdventureGame game(RT_CLIENT);
 	int ret = game.mainLoop(&cli);

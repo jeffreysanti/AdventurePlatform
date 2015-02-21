@@ -26,6 +26,7 @@
 #include <sys/ioctl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <algorithm>
 
 static char termbuf[2048];
 static char buf2[30];
@@ -62,31 +63,64 @@ TerminalClient::TerminalClient() {
 	hei = tgetnum("li")-1; // last line for input box
 	wid = tgetnum("co");
 	_drawer = new Drawer(wid, hei, BLACK);
+	_supportBrightColors = false;
 }
 
 TerminalClient::~TerminalClient() {
 	delete _drawer;
 }
 
-inline std::string ColorToCharSeq(Color fg, Color bg){
+void TerminalClient::promptForColorSupport(){
+	_supportBrightColors = true;
+	printf("\033[2J");
+	printf("\033[%d;%df", 1, 1);
+	printf("%sIs The Text Below *Yellow* ? [It Says: I Support Colors]\n\n", ColorToCharSeq(GRAY, BLACK).c_str());
+	printf("%sI Support Colors\n\n\n", ColorToCharSeq(YELLOW, BLACK).c_str());
+	_supportBrightColors = false;
+	printf("%sEnter yes or y if you do, otherwise any key.\n", ColorToCharSeq(GRAY, BLACK).c_str());
+	std::string in = inputGetLine();
+	std::transform(in.begin(), in.end(), in.begin(), ::tolower);
+	if(in == "y" || in == "yes"){
+		_supportBrightColors = true;
+	}
+}
+
+void TerminalClient::setSupportBrightColors(bool b){
+	_supportBrightColors = b;
+}
+
+std::string TerminalClient::ColorToCharSeq(Color fg, Color bg){
 	std::string start = "\033[";
 
-	if(fg == BLACK) start += "30;";
-	else if(fg == RED) start += "31;";
-	else if(fg == GREEN) start += "32;";
-	else if(fg == BROWN) start += "33;";
-	else if(fg == BLUE) start += "34;";
-	else if(fg == MAGENTA) start += "35;";
-	else if(fg == CYAN) start += "36;";
-	else if(fg == GRAY) start += "37;";
-	else if(fg == DARKGRAY) start += "90;";
-	else if(fg == LIGHTRED) start += "91;";
-	else if(fg == LIGHTGREEN) start += "92;";
-	else if(fg == YELLOW) start += "93;";
-	else if(fg == LIGHTBLUE) start += "94;";
-	else if(fg == LIGHTMAGENTA) start += "95;";
-	else if(fg == LIGHTCYAN) start += "96;";
-	else start += "97;";
+	if(fg == BLACK) start += "0;30;";
+	else if(fg == RED) start += "0;31;";
+	else if(fg == GREEN) start += "0;32;";
+	else if(fg == BROWN) start += "0;33;";
+	else if(fg == BLUE) start += "0;34;";
+	else if(fg == MAGENTA) start += "0;35;";
+	else if(fg == CYAN) start += "0;36;";
+	else if(fg == GRAY) start += "0;37;";
+	else{
+		if(_supportBrightColors){
+			if(fg == DARKGRAY) start += "0;90;";
+			else if(fg == LIGHTRED) start += "0;91;";
+			else if(fg == LIGHTGREEN) start += "0;92;";
+			else if(fg == YELLOW) start += "0;93;";
+			else if(fg == LIGHTBLUE) start += "0;94;";
+			else if(fg == LIGHTMAGENTA) start += "0;95;";
+			else if(fg == LIGHTCYAN) start += "0;96;";
+			else start += "0;97;";
+		}else{
+			if(fg == DARKGRAY) start += "1;30;";
+				else if(fg == LIGHTRED) start += "1;31;";
+				else if(fg == LIGHTGREEN) start += "1;32;";
+				else if(fg == YELLOW) start += "1;33;";
+				else if(fg == LIGHTBLUE) start += "1;34;";
+				else if(fg == LIGHTMAGENTA) start += "1;35;";
+				else if(fg == LIGHTCYAN) start += "1;36;";
+				else start += "1;37;";
+		}
+	}
 
 	if(bg == BLACK) start += "40m";
 	else if(bg == RED) start += "41m";
@@ -96,14 +130,27 @@ inline std::string ColorToCharSeq(Color fg, Color bg){
 	else if(bg == MAGENTA) start += "45m";
 	else if(bg == CYAN) start += "46m";
 	else if(bg == GRAY) start += "47m";
-	else if(bg == DARKGRAY) start += "100m";
-	else if(bg == LIGHTRED) start += "101m";
-	else if(bg == LIGHTGREEN) start += "102m";
-	else if(bg == YELLOW) start += "103m";
-	else if(bg == LIGHTBLUE) start += "104m";
-	else if(bg == LIGHTMAGENTA) start += "105m";
-	else if(bg == LIGHTCYAN) start += "106m";
-	else start += "107m";
+	else{
+		if(_supportBrightColors){
+			if(bg == DARKGRAY) start += "100m";
+			else if(bg == LIGHTRED) start += "101m";
+			else if(bg == LIGHTGREEN) start += "102m";
+			else if(bg == YELLOW) start += "103m";
+			else if(bg == LIGHTBLUE) start += "104m";
+			else if(bg == LIGHTMAGENTA) start += "105m";
+			else if(bg == LIGHTCYAN) start += "106m";
+			else start += "107m";
+		}else{
+			if(bg == DARKGRAY) start += "40m";
+			else if(bg == LIGHTRED) start += "41m";
+			else if(bg == LIGHTGREEN) start += "42m";
+			else if(bg == YELLOW) start += "43m";
+			else if(bg == LIGHTBLUE) start += "44m";
+			else if(bg == LIGHTMAGENTA) start += "45m";
+			else if(bg == LIGHTCYAN) start += "46m";
+			else start += "47m";
+		}
+	}
 
 	return start;
 }
@@ -136,7 +183,7 @@ void TerminalClient::paint()
 		}
 	}
 	// command bar
-	printf("\033[%d;%df", _drawer->getHeight()+1, 0);
+	printf("\033[%d;%df", _drawer->getHeight()+1, 1);
 	printf("%s", ColorToCharSeq(WHITE, BLACK).c_str());
 	for(int i=0; i<_drawer->getWidth(); i++)
 		printf(" ");
@@ -159,8 +206,8 @@ void TerminalClient::enableKeyInput(void (*callback)(void*,char), void *obj){
 
 std::string TerminalClient::inputGetLine(){
 
-	printf("\033[%d;%df", _drawer->getHeight()+1, 0);
-	printf("%s", ColorToCharSeq(WHITE, BLACK).c_str());
+	printf("\033[%d;%df", _drawer->getHeight()+1, 1);
+	printf("%s", ColorToCharSeq(GRAY, BLACK).c_str());
 	fflush(stdout);
 
 	static struct termios preLine, tmp;
