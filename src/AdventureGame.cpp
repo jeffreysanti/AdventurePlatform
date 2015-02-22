@@ -10,6 +10,9 @@
 #include "AdventureGame.h"
 #include <unistd.h>
 
+#include "PlayerActor.h"
+
+
 
 AdventureGame::AdventureGame(RunType rt) {
 	_rt = rt;
@@ -33,7 +36,9 @@ void AdventureGame::defaultKeyboardHandler(char c){
 int AdventureGame::mainLoop(AbstractClient *cli)
 {
 	if(_rt == RT_CLIENT){
-		DrawLayerGroup grp = cli->getDrawer()->printFormattedTextCenter(cli->getDrawer()->newLayer(),
+		cli->getDrawer()->resetScreen(BLACK);
+		cli->disableInput();
+		/*DrawLayerGroup grp = cli->getDrawer()->printFormattedTextCenter(cli->getDrawer()->newLayer(),
 				"<5>[ <6>Th<3>e Game ]");
 		grp.applyTransformation(0, 3);
 
@@ -49,16 +54,25 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 
 		cli->enableKeyInput(&AdventureGame::__defaultKeyboardHandler, this);
 
-		cli->paint();
+		cli->paint();*/
+
+		Space *start = _S.newSpace("startPos");
+
+		_A.registerActor(new PlayerActor(start, cli));
+
+
+		DrawLayerGroup grp = cli->getDrawer()->printFormattedTextCenter(cli->getDrawer()->newLayer(),
+						"<5>[ <6>Th<3>e Game ]");
+				grp.applyTransformation(0, 3);
+
 		while(!_quit){
 			usleep(50000); // 1/20 sec tick
 
 			// perform any updates
-			if(_ticks % 20 == 0 && _ticks > 0)
-				grp.applyTransformation(0, 1);
+			_A.onUpdate(_ticks);
 
-			if(_ticks > 60){
-				std::string line = cli->inputGetLine();
+			if(_ticks % 20 == 0){
+				grp.applyTransformation(0, 1);
 			}
 
 			// handle screen & input

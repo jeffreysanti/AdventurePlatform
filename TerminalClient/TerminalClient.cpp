@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
-#include <curses.h>
+#include <ncurses.h>
 #include <term.h>
 #include <error.h>
 #include <signal.h>
@@ -36,6 +36,7 @@ static bool contin = true;
 static void handleSignal(int signo){
 	tcsetattr(0, TCSANOW, &oldterm);
 	contin = false;
+	rl_callback_handler_remove();
 }
 
 
@@ -67,18 +68,19 @@ TerminalClient::TerminalClient() {
 }
 
 TerminalClient::~TerminalClient() {
+	rl_callback_handler_remove();
 	delete _drawer;
 }
 
 void TerminalClient::promptForColorSupport(){
 	_supportBrightColors = true;
-	printf("\033[2J");
-	printf("\033[%d;%df", 1, 1);
-	printf("%sIs The Text Below *Yellow* ? [It Says: I Support Colors]\n\n", ColorToCharSeq(GRAY, BLACK).c_str());
-	printf("%sI Support Colors\n\n\n", ColorToCharSeq(YELLOW, BLACK).c_str());
-	_supportBrightColors = false;
-	printf("%sEnter yes or y if you do, otherwise any key.\n", ColorToCharSeq(GRAY, BLACK).c_str());
+	_drawer->resetScreen(BLACK);
+	_drawer->printFormattedTextWW(_drawer->newLayer(GRAY),
+			"Is The Text Below *Yellow* ? [It Says: I Support Colors]\n\n"
+			"<D>I Support Colors\n\n\n"
+			"<7>Enter yes or y if you do, otherwise any key.\n");
 	std::string in = inputGetLine();
+	_supportBrightColors = false;
 	std::transform(in.begin(), in.end(), in.begin(), ::tolower);
 	if(in == "y" || in == "yes"){
 		_supportBrightColors = true;
@@ -157,9 +159,10 @@ std::string TerminalClient::ColorToCharSeq(Color fg, Color bg){
 
 void TerminalClient::paint()
 {
-
 	if(!_drawer->needsPaint())
 		return;
+
+	//if(_im == IM_ASYNC_LINE && ::rl_refresh_line())
 
 	Color oldFG=BROWN, oldBG=BLACK;
 	for(int y=0; y<_drawer->getHeight(); y++){
@@ -183,11 +186,12 @@ void TerminalClient::paint()
 		}
 	}
 	// command bar
-	printf("\033[%d;%df", _drawer->getHeight()+1, 1);
+	/*printf("\033[%d;%df", _drawer->getHeight()+1, 1);
 	printf("%s", ColorToCharSeq(WHITE, BLACK).c_str());
 	for(int i=0; i<_drawer->getWidth(); i++)
-		printf(" ");
+		printf(" ");*/
 	fflush(stdout);
+	rl_forced_update_display();
 }
 
 void TerminalClient::disableInput(){
@@ -205,6 +209,7 @@ void TerminalClient::enableKeyInput(void (*callback)(void*,char), void *obj){
 }
 
 std::string TerminalClient::inputGetLine(){
+	paint();
 
 	printf("\033[%d;%df", _drawer->getHeight()+1, 1);
 	printf("%s", ColorToCharSeq(GRAY, BLACK).c_str());
@@ -223,6 +228,8 @@ std::string TerminalClient::inputGetLine(){
 	free(s);
 
 	tcsetattr(0, TCSANOW, &preLine);
+	_drawer->onLayerModified();
+	paint();
 	return ret;
 }
 
@@ -233,15 +240,66 @@ bool TerminalClient::processInput(){
 	pfds[0].events = POLLIN;
 	int sz = poll(pfds, 1, 0);
 
-	// consume input & propogate it to where it is requested
-	if (sz > 0) {
-		char c;
-		read(0, &c, 1);
-		if(_im == IM_KEY_ACCEPT){
-			_keyInCallback(_keyInCallbackObj, c);
+	if(_im == IM_ASYNC_LINE){
+		if(sz > 0){
+			rl_callback_read_char();
+		}
+	}else{
+		// consume input & propogate it to where it is requested
+		if (sz > 0) {
+			char c;
+			read(0, &c, 1);
+			if(_im == IM_KEY_ACCEPT){
+				_keyInCallback(_keyInCallbackObj, c);
+			}
 		}
 	}
 	return contin;
+}
+
+static TerminalClient *termSelf;
+void TerminalClient::lineHandler(char *line){
+	if(line == NULL){ // escape
+		rl_callback_handler_remove();
+		contin = false;
+		return;
+	}
+	add_history(line);
+	std::string ret = std::string(line);
+	free(line);
+
+	rl_callback_handler_remove();
+
+	rl_line_buffer[0] = 0;
+	termSelf->disableInput();
+	termSelf->_drawer->onLayerModified();
+	termSelf->paint();
+
+	// call callback
+	(termSelf->_lineInCallback)(termSelf->_lineInCallbackObj, ret);
+}
+
+void TerminalClient::asyncInputGetLine(void (*callback)(void*, std::string), void *obj){
+	if(_im == IM_ASYNC_LINE)
+		return;
+
+	paint();
+	_im = IM_ASYNC_LINE;
+
+	char buf[256];
+	memset(buf, 0, 256*sizeof(char));
+	sprintf(buf, "\033[%d;%df%s > ", _drawer->getHeight()+1, 1,ColorToCharSeq(GRAY, BLACK).c_str());
+
+	static struct termios preLine;
+	tcgetattr(0, &preLine);
+	preLine.c_lflag |= (ICANON | ECHO);
+	tcsetattr(0, TCSANOW, &preLine);
+
+	_lineInCallbackObj = obj;
+	_lineInCallback = callback;
+
+	termSelf = this;
+	rl_callback_handler_install(buf, lineHandler);
 }
 
 

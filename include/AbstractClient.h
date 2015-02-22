@@ -14,7 +14,8 @@
 
 enum InputMode{
 	IM_NO_INPUT,
-	IM_KEY_ACCEPT
+	IM_KEY_ACCEPT,
+	IM_ASYNC_LINE
 };
 
 class AbstractClient {
@@ -29,6 +30,8 @@ public:
 	virtual void enableKeyInput(void (*callback)(void*, char), void *obj);
 	virtual std::string inputGetLine();
 
+	virtual void asyncInputGetLine(void (*callback)(void*, std::string), void *obj);
+
 
 	Drawer *getDrawer();
 protected:
@@ -37,6 +40,9 @@ protected:
 
 	void (*_keyInCallback)(void*, char);
 	void *_keyInCallbackObj;
+
+	void (*_lineInCallback)(void*, std::string);
+	void *_lineInCallbackObj;
 };
 
 #endif /* ABSTRACTCLIENT_H_ */

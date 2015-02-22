@@ -32,6 +32,10 @@ public:
 	void setSupportBrightColors(bool b);
 	void promptForColorSupport();
 
+	virtual void asyncInputGetLine(void (*callback)(void*, std::string), void *obj);
+
+	static void lineHandler(char *line);
+
 private:
 
 	bool _supportBrightColors;

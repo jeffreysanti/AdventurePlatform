@@ -43,3 +43,6 @@ Drawer *AbstractClient::getDrawer()
 	return _drawer;
 }
 
+void AbstractClient::asyncInputGetLine(void (*callback)(void*, std::string), void *obj){
+
+}

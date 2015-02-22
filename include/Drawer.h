@@ -19,6 +19,7 @@ public:
 	virtual ~Drawer();
 
 	DrawLayer *newLayer();
+	DrawLayer *newLayer(Color c);
 	DrawLayer *newLayer(int wid, int hei);
 
 	std::vector<DrawLayer *> _L;
@@ -28,6 +29,8 @@ public:
 
 	DrawLayerGroup printFormattedTextWW(DrawLayer *initialL, const char* format, ... );
 	DrawLayerGroup printFormattedTextCenter(DrawLayer *initialL, const char* format, ... );
+
+	void resetScreen(Color bg=BLACK);
 
 	void onLayerModified();
 	bool needsPaint();

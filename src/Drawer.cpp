@@ -22,13 +22,24 @@ Drawer::Drawer(int wid, int hei, Color bg) {
 }
 
 Drawer::~Drawer() {
-	// TODO Auto-generated destructor stub
+	for(int i=0; i<_L.size(); i++){
+		delete _L[i];
+	}
+	_L.clear();
 }
 
 
 DrawLayer *Drawer::newLayer()
 {
 	return newLayer(_wid, _hei);
+}
+
+
+DrawLayer *Drawer::newLayer(Color c)
+{
+	DrawLayer *layer = newLayer();
+	layer->setColor(c);
+	return layer;
 }
 
 DrawLayer *Drawer::newLayer(int wid, int hei)
@@ -100,7 +111,7 @@ DrawLayerGroup Drawer::printFormattedTextWW(DrawLayer *layer, const char* format
 
 					// now blank each active letter from previous layer
 					for(int y=0; y<x; y++){
-						if(bufferNew[y] != ' '){
+						if(bufferNew[y] != ' ' && bufferNew[y] != '\n'){
 							bufferNew[y] = '\a'; // bell character
 						}
 					}
@@ -206,4 +217,16 @@ bool Drawer::needsPaint(){
 	_needsRefresh = false;
 	return ret;
 }
+
+void Drawer::resetScreen(Color bg){
+	for(int i=0; i<_L.size(); i++){
+		delete _L[i];
+	}
+	_L.clear();
+
+	DrawLayer *layer = newLayer();
+	layer->setColor(bg);
+	layer->solidFill(' ');
+}
+
 
