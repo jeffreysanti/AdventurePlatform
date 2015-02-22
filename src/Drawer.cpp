@@ -103,7 +103,7 @@ DrawLayerGroup Drawer::printFormattedTextWW(DrawLayer *layer, const char* format
 				{
 					layer->printTextWW("%s", bufferNew);
 					// new layer for new color
-					DrawLayer *lnew = newLayer();
+					DrawLayer *lnew = newLayer(layer->getEffectiveWidth(), layer->getEffectiveHeight());
 					lnew->setOffset(layer->getOffsetX(), layer->getOffsetY());
 					Color f = charToColor(buffer[i+1]);
 					lnew->setColor(f);
@@ -182,7 +182,7 @@ DrawLayerGroup Drawer::printFormattedTextCenter(DrawLayer *layer, const char* fo
 				{
 					layer->printTextCenter("%s", bufferNew);
 					// new layer for new color
-					DrawLayer *lnew = newLayer();
+					DrawLayer *lnew = newLayer(layer->getEffectiveWidth(), layer->getEffectiveHeight());
 					lnew->setOffset(layer->getOffsetX(), layer->getOffsetY());
 					Color f = charToColor(buffer[i+1]);
 					lnew->setColor(f);

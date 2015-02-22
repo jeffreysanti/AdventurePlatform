@@ -19,6 +19,7 @@ PlayerActor::PlayerActor(Space *space, AbstractClient *cli) : Actor(space) {
 	grp.applyTransformation(0, 4);
 	_name = _cli->inputGetLine();
 	//_cli->asyncInputGetLine(&PlayerActor::__keyboardHandler, this);
+	showLocation();
 }
 
 PlayerActor::~PlayerActor() {
@@ -33,11 +34,18 @@ void PlayerActor::__keyboardHandler(void *self, std::string s){
 	((PlayerActor*)self)->keyboardHandler(s);
 }
 
+void PlayerActor::showLocation(){
+	_space->outputToDrawer(_cli->getDrawer());
+}
 
 void PlayerActor::keyboardHandler(std::string s){
 	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 	if(s == "exit" || s == "q" || s == "quit"){
-		exit(0);
+		_cli->quit();
+	}else if(s == "help" || s == "h"){
+
+	}else{
+		// ???
 	}
 }
 

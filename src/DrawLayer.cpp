@@ -32,7 +32,7 @@ DrawLayer::~DrawLayer() {
 	for(int i=0; i<_hei; i++){
 		delete [] _buffer[i];
 	}
-	delete _buffer;
+	delete [] _buffer;
 }
 
 void DrawLayer::solidFill(char c)
@@ -175,10 +175,10 @@ char DrawLayer::getCell(int termX, int termY)
 
 
 int DrawLayer::getEffectiveWidth(){
-	return _wid - _offx;
+	return _wid;
 }
 int DrawLayer::getEffectiveHeight(){
-	return _hei - _offy;
+	return _hei;
 }
 
 DrawLayerGroup::DrawLayerGroup(std::vector<DrawLayer*> l){

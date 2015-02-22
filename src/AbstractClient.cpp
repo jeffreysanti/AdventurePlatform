@@ -12,6 +12,7 @@
 AbstractClient::AbstractClient() {
 	_drawer = NULL;
 	_im = IM_NO_INPUT;
+	_quit = false;
 }
 
 AbstractClient::~AbstractClient() {
@@ -45,4 +46,8 @@ Drawer *AbstractClient::getDrawer()
 
 void AbstractClient::asyncInputGetLine(void (*callback)(void*, std::string), void *obj){
 
+}
+
+void AbstractClient::quit(){
+	_quit = true;
 }

@@ -21,6 +21,8 @@ public:
 
 	static void __keyboardHandler(void *self, std::string s);
 
+	void showLocation();
+
 protected:
 
 	void keyboardHandler(std::string s);

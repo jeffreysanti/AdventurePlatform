@@ -254,7 +254,7 @@ bool TerminalClient::processInput(){
 			}
 		}
 	}
-	return contin;
+	return contin && !_quit;
 }
 
 static TerminalClient *termSelf;

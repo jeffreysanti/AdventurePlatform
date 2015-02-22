@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "Drawer.h"
 
 class Gateway;
 
@@ -25,6 +26,8 @@ public:
 	std::string getUUID();
 
 	void addGatewayOut(Gateway *gateway);
+
+	void outputToDrawer(Drawer *draw);
 
 private:
 

@@ -32,11 +32,13 @@ public:
 
 	virtual void asyncInputGetLine(void (*callback)(void*, std::string), void *obj);
 
+	virtual void quit();
 
 	Drawer *getDrawer();
 protected:
 	Drawer * _drawer;
 	InputMode _im;
+	bool _quit;
 
 	void (*_keyInCallback)(void*, char);
 	void *_keyInCallbackObj;

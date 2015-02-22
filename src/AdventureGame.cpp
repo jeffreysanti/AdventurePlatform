@@ -57,23 +57,16 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 		cli->paint();*/
 
 		Space *start = _S.newSpace("startPos");
+		start->setName("Start Village");
 
 		_A.registerActor(new PlayerActor(start, cli));
 
-
-		DrawLayerGroup grp = cli->getDrawer()->printFormattedTextCenter(cli->getDrawer()->newLayer(),
-						"<5>[ <6>Th<3>e Game ]");
-				grp.applyTransformation(0, 3);
 
 		while(!_quit){
 			usleep(50000); // 1/20 sec tick
 
 			// perform any updates
 			_A.onUpdate(_ticks);
-
-			if(_ticks % 20 == 0){
-				grp.applyTransformation(0, 1);
-			}
 
 			// handle screen & input
 			cli->paint();
