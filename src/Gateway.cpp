@@ -55,12 +55,22 @@ bool Gateway::testDirection(std::string input){
 	return false;
 }
 
+bool Gateway::actorAttemptGateway(Actor *actor, AbstractClient *cli){
+	actor->setSpace(_dest);
+	return true;
+}
+
 bool Gateway::isEnabled(){
 	return _enabled;
 }
 
 void Gateway::setEnabled(bool enabled){
 	_enabled = enabled;
+}
+
+void Gateway::outputToDrawer(Drawer *draw, DrawLayer *layer){
+	std::string sOutput = " * " + _primaryDirection;
+	draw->printFormattedTextWW(layer, sOutput.c_str());
 }
 
 

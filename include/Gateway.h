@@ -10,6 +10,8 @@
 
 #include <set>
 #include <string>
+#include "AbstractClient.h"
+#include "Actor.h"
 
 class Space;
 
@@ -29,6 +31,10 @@ public:
 
 	bool isEnabled();
 	void setEnabled(bool enabled);
+
+	virtual void outputToDrawer(Drawer *draw, DrawLayer *layer);
+
+	virtual bool actorAttemptGateway(Actor *actor, AbstractClient *cli);
 
 	// for sorting by direction string
 	static bool compareGatewayStrings(Gateway* a, Gateway* b) { return (*a < *b); }

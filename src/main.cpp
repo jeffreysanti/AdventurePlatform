@@ -9,17 +9,20 @@
 
 #include "AdventureGame.h"
 #include <cstdio>
-/*#include <boost/asio.hpp>
-#include <boost/asio.hpp>
-#include <boost/python.hpp>
-#include <Python.h>*/
+//#include <boost/asio.hpp>
+//#include <boost/asio.hpp>
+//#include <boost/python.hpp>
+//#include <Python.h>
 
 #include "TerminalClient/TerminalClient.h"
+#include "TerminalClient/TestingClient.h"
+
 
 //using namespace boost::python;
 
 int main(int argc, char** argv)
 {
+
 	/*Py_Initialize();
 
 	object result = eval("5 ** 2");
@@ -27,6 +30,7 @@ int main(int argc, char** argv)
 
 	printf("Value: %d", five_squared);*/
 
+	//TestingClient cli;
 	TerminalClient cli;
 	cli.promptForColorSupport();
 

@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
+#include <boost/algorithm/string.hpp>
+#include "Gateway.h"
 
 PlayerActor::PlayerActor(Space *space, AbstractClient *cli) : Actor(space) {
 	_class = "player";
@@ -39,13 +41,24 @@ void PlayerActor::showLocation(){
 }
 
 void PlayerActor::keyboardHandler(std::string s){
-	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+	boost::algorithm::to_lower(s);
+	boost::algorithm::trim(s);
+
 	if(s == "exit" || s == "q" || s == "quit"){
 		_cli->quit();
 	}else if(s == "help" || s == "h"){
 
-	}else{
-		// ???
+	}else{ // assume 'go' command
+		if(boost::algorithm::starts_with(s, "go ")){ // remove "go" section
+			boost::algorithm::erase_head(s, 2);
+			boost::algorithm::trim_left(s);
+		}
+		Gateway *nav = _space->findGatewayOut(s);
+		if(nav != NULL){
+			if(nav->actorAttemptGateway(this, _cli)){
+				showLocation();
+			}
+		}
 	}
 }
 

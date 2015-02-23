@@ -20,6 +20,9 @@ public:
 	virtual ~SpaceManager();
 
 	Space *newSpace(std::string uuid);
+	Gateway *newGateway(std::string uuid, Space *src, Space *dest, std::string dir);
+
+	Space *getSpace(std::string uuid);
 
 private:
 

@@ -25,6 +25,13 @@ std::string Space::getName(){
 	return _name;
 }
 
+void Space::setDesc(std::string desc){
+	_desc = desc;
+}
+std::string Space::getDesc(){
+	return _desc;
+}
+
 std::string Space::getUUID(){
 	return _uuid;
 }
@@ -34,28 +41,36 @@ void Space::addGatewayOut(Gateway *gateway){
 	std::sort(_D.begin(), _D.end(), Gateway::compareGatewayStrings);
 }
 
+Gateway *Space::findGatewayOut(std::string in){
+	for(int i=0; i<_D.size(); i++){
+		if(_D[i]->testDirection(in)){
+			return _D[i];
+		}
+	}
+	return NULL;
+}
+
 void Space::outputToDrawer(Drawer *draw){
 	draw->resetScreen(BLACK);
 
 	DrawLayer *layerDesc = draw->newLayer(draw->getWidth(), draw->getHeight()/2 - 2);
 	layerDesc->setOffset(0, 1);
 	layerDesc->setColor(MAGENTA);
-	layerDesc->solidFill();
+	//layerDesc->solidFill();
 
 	DrawLayer *layerFind = draw->newLayer((draw->getWidth() * 5 / 8)-1,
 			draw->getHeight() - 2 - layerDesc->getEffectiveHeight());
 	layerFind->setOffset(0, 2+layerDesc->getEffectiveHeight());
 	layerFind->setColor(YELLOW);
-	layerFind->solidFill();
+	//layerFind->solidFill();
 
 	DrawLayer *layerExits = draw->newLayer(draw->getWidth() - 1 - layerFind->getEffectiveWidth() ,
 			draw->getHeight() - 2 - layerDesc->getEffectiveHeight());
 	layerExits->setOffset(1+layerFind->getEffectiveWidth(), 2+layerDesc->getEffectiveHeight());
 	layerExits->setColor(CYAN);
-	layerExits->solidFill();
+	//layerExits->solidFill();
 
 	DrawLayer *divTitle = draw->newLayer(draw->getWidth(), 1);
-	draw->printFormattedTextCenter(divTitle, "<D>%s", _name.c_str());
 
 	DrawLayer *divFind = draw->newLayer(layerFind->getEffectiveWidth(), 1);
 	divFind->setOffset(0, layerFind->getOffsetY()-1);
@@ -64,7 +79,18 @@ void Space::outputToDrawer(Drawer *draw){
 	DrawLayer *divExits = draw->newLayer(layerExits->getEffectiveWidth(), 1);
 	divExits->setOffset(layerExits->getOffsetX(), layerExits->getOffsetY()-1);
 	draw->printFormattedTextCenter(divExits, "<7>Exits");
+
+	// NOW: output actual info
+	draw->printFormattedTextCenter(divTitle, _name.c_str());
+	draw->printFormattedTextWW(layerDesc, _desc.c_str());
+
+	for(int i=0; i<_D.size(); i++){
+		DrawLayer *exitLayer = draw->newLayer(layerExits->getEffectiveWidth(), 1);
+		exitLayer->setOffset(layerExits->getOffsetX(), layerExits->getOffsetY()+i);
+		_D[i]->outputToDrawer(draw, exitLayer);
+	}
 }
+
 
 
 

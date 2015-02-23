@@ -27,8 +27,10 @@ void Actor::setUniqueUUID(bool unique, std::string uuid){
 	_uuid = uuid;
 }
 
-void Actor::onUpdate(long long tick){
 
+void Actor::setSpace(Space *space){
+	_space = space;
 }
+
 
 

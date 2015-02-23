@@ -23,16 +23,23 @@ public:
 	void setName(std::string name);
 	std::string getName();
 
+	void setDesc(std::string desc);
+	std::string getDesc();
+
 	std::string getUUID();
 
 	void addGatewayOut(Gateway *gateway);
 
-	void outputToDrawer(Drawer *draw);
+	Gateway *findGatewayOut(std::string in);
+
+	virtual void outputToDrawer(Drawer *draw);
 
 private:
 
 	std::string _uuid;
 	std::string _name;
+
+	std::string _desc;
 
 	std::vector<Gateway*> _D;
 

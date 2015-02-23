@@ -14,6 +14,7 @@
 #include <vector>
 #include "Space.h"
 
+
 class ActorManager;
 
 class Actor {
@@ -26,7 +27,9 @@ public:
 
 	std::string getClass();
 
-	virtual void onUpdate(long long tick);
+	void setSpace(Space *space);
+
+	virtual void onUpdate(long long tick) = 0;
 
 protected:
 
@@ -37,8 +40,7 @@ protected:
 
 private:
 	void setUniqueUUID(bool unique, std::string uuid);
-
-
 };
+
 
 #endif /* ACTOR_H_ */
