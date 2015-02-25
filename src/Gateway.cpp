@@ -15,10 +15,17 @@ Gateway::Gateway(std::string uuid, Space *src, Space *dest, std::string primaryD
 	_dest = dest;
 	_primaryDirection = primaryDirection;
 	_enabled = true;
+	_displayer = new GatewayDisplayer();
+	_actorAttempter = new GatewayActorAttempter();
 }
 
 Gateway::~Gateway() {
 	_dirs.clear();
+	if(_displayer != NULL){
+		delete _displayer;
+	}if(_actorAttempter != NULL){
+		delete _actorAttempter;
+	}
 }
 
 std::string Gateway::getUUID(){
@@ -56,8 +63,10 @@ bool Gateway::testDirection(std::string input){
 }
 
 bool Gateway::actorAttemptGateway(Actor *actor, AbstractClient *cli){
-	actor->setSpace(_dest);
-	return true;
+	if(_actorAttempter != NULL){
+		return _actorAttempter->actorAttemptGateway(actor, cli);
+	}
+	return false;
 }
 
 bool Gateway::isEnabled(){
@@ -69,10 +78,48 @@ void Gateway::setEnabled(bool enabled){
 }
 
 void Gateway::outputToDrawer(Drawer *draw, DrawLayer *layer){
-	std::string sOutput = " * " + _primaryDirection;
+	if(_displayer != NULL){
+		_displayer->outputToDrawer(draw, layer);
+	}
+}
+
+void Gateway::setDisplayer(std::auto_ptr<GatewayDisplayer> disp){
+	if(_displayer != NULL)
+		delete _displayer;
+	_displayer = disp.get();
+	disp.release();
+	_displayer->gw = this;
+}
+void Gateway::setActorAttempter(std::auto_ptr<GatewayActorAttempter> attempt){
+	if(_actorAttempter != NULL)
+		delete _actorAttempter;
+	_actorAttempter = attempt.get();
+	attempt.release();
+	_actorAttempter->gw = this;
+}
+
+
+
+
+
+
+void GatewayDisplayer::outputToDrawer(Drawer *draw, DrawLayer *layer){
+	std::string sOutput = " * " + gw->getPrimaryDirection();
 	draw->printFormattedTextWW(layer, sOutput.c_str());
 }
 
+GatewayDisplayer::~GatewayDisplayer(){
+
+}
+
+bool GatewayActorAttempter::actorAttemptGateway(Actor *actor, AbstractClient *cli){
+	actor->setSpace(gw->getDestination());
+	return true;
+}
+
+GatewayActorAttempter::~GatewayActorAttempter(){
+
+}
 
 
 

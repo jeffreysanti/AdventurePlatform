@@ -30,13 +30,22 @@ int main(int argc, char** argv)
 
 	printf("Value: %d", five_squared);*/
 
-	//TestingClient cli;
-	TerminalClient cli;
-	cli.promptForColorSupport();
+	if(argc > 1){
+		TestingClient cli;
 
-	AdventureGame game(RT_CLIENT);
-	int ret = game.mainLoop(&cli);
-	return ret;
+		AdventureGame game(RT_CLIENT);
+		int ret = game.mainLoop(&cli);
+		return ret;
+	}else{
+		TerminalClient cli;
+		cli.promptForColorSupport();
+
+		AdventureGame game(RT_CLIENT);
+		int ret = game.mainLoop(&cli);
+		return ret;
+	}
+	//TestingClient cli;
+
 }
 
 

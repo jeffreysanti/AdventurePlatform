@@ -12,8 +12,24 @@
 #include <string>
 #include "AbstractClient.h"
 #include "Actor.h"
+#include <memory>
 
 class Space;
+class Gateway;
+
+class GatewayDisplayer{
+public:
+	virtual ~GatewayDisplayer();
+	virtual void outputToDrawer(Drawer *draw, DrawLayer *layer);
+	Gateway *gw;
+};
+class GatewayActorAttempter{
+public:
+	virtual ~GatewayActorAttempter();
+	virtual bool actorAttemptGateway(Actor *actor, AbstractClient *cli);
+	Gateway *gw;
+};
+
 
 class Gateway {
 public:
@@ -32,9 +48,12 @@ public:
 	bool isEnabled();
 	void setEnabled(bool enabled);
 
-	virtual void outputToDrawer(Drawer *draw, DrawLayer *layer);
+	void outputToDrawer(Drawer *draw, DrawLayer *layer);
+	bool actorAttemptGateway(Actor *actor, AbstractClient *cli);
 
-	virtual bool actorAttemptGateway(Actor *actor, AbstractClient *cli);
+	void setDisplayer(std::auto_ptr<GatewayDisplayer> disp);
+	void setActorAttempter(std::auto_ptr<GatewayActorAttempter> attmpt);
+
 
 	// for sorting by direction string
 	static bool compareGatewayStrings(Gateway* a, Gateway* b) { return (*a < *b); }
@@ -47,9 +66,16 @@ private:
 	bool _enabled;
 	std::string _uuid;
 
-	std::string _primaryDirection;
 	std::set<std::string> _dirs;
 
+	GatewayDisplayer *_displayer;
+	GatewayActorAttempter *_actorAttempter;
+
+protected:
+
+	std::string _primaryDirection;
+
 };
+
 
 #endif /* INCLUDE_GATEWAY_H_ */

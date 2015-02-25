@@ -46,7 +46,10 @@ public:
 	void fillRect(int x0, int y0, int x1, int y1, char c = ' ');
 	void setChar(int x, int y, char c);
 	void printTextWW(const char* format, ... );
+	void printTextWW(std::string s);
 	void printTextCenter(const char* format, ... );
+	void printTextCenter(std::string s);
+
 
 	void setColor(Color c);
 	Color getColor();

@@ -113,6 +113,10 @@ void DrawLayer::printTextWW(const char* format, ... ){
 	}
 }
 
+void DrawLayer::printTextWW(std::string s){
+	printTextWW("%s", s.c_str());
+}
+
 void DrawLayer::printTextCenter(const char* format, ... ){
 	char buffer[MAX_STRING];
 	memset(buffer, 0, sizeof(char)*MAX_STRING);
@@ -142,6 +146,10 @@ void DrawLayer::printTextCenter(const char* format, ... ){
 			setChar(x, 0, buffer[i]);
 		x ++;
 	}
+}
+
+void DrawLayer::printTextCenter(std::string s){
+	printTextCenter("%s", s.c_str());
 }
 
 void DrawLayer::setColor(Color c){

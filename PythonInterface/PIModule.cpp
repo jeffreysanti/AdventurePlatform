@@ -6,6 +6,8 @@ extern void piExportSpace();
 extern void piExportActor();
 extern void piExportSpaceManager();
 extern void piExportGateway();
+extern void piExportDrawer();
+extern void piExportDrawLayer();
 
 
 BOOST_PYTHON_MODULE(AdventurePlatform)
@@ -14,5 +16,7 @@ BOOST_PYTHON_MODULE(AdventurePlatform)
 	piExportActor();
 	piExportGateway();
 	piExportSpaceManager();
+	piExportDrawer();
+	piExportDrawLayer();
 }
 

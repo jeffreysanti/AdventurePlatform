@@ -15,8 +15,27 @@ def setup(SM):
 	g1.addDirectionString("main st.");
 	g1.addDirectionString("main");
 
+	class testGW(GatewayDisplayer):
+		def __init__(self):
+			GatewayDisplayer.__init__(self)
+			print("Initted testGW")
+		
+		def outputToDrawer(self, draw, layer):
+			draw.printFormattedTextWW(layer, "Hello!!!")
 
+	
+	g1.setDisplayer(testGW());
+	
+	print(type(SM.getSpace("startPos")))
+	print(type(testGW()))
+	print(type(g1))
+	print(type(SM))
+
+	print(SM.getSpace("startPos"))
+	print(testGW())
+	print(g1)
 	print(SM)
+
 	print("HI")
 	return 3
 

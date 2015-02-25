@@ -28,7 +28,9 @@ public:
 	int getHeight();
 
 	DrawLayerGroup printFormattedTextWW(DrawLayer *initialL, const char* format, ... );
+	DrawLayerGroup printFormattedTextWW(DrawLayer *initialL, std::string s);
 	DrawLayerGroup printFormattedTextCenter(DrawLayer *initialL, const char* format, ... );
+	DrawLayerGroup printFormattedTextCenter(DrawLayer *initialL, std::string s);
 
 	void resetScreen(Color bg=BLACK);
 

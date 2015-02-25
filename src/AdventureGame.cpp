@@ -130,6 +130,10 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 			boost::python::object plugin_namespace = plugin.attr("__dict__");
 
 			plugin.attr("setup")(boost::python::ptr(&_S));
+
+
+			_A.registerActor(new PlayerActor(start, cli));
+
 		}catch( boost::python::error_already_set ){
 			PyErr_Print();
 			exit(1);
@@ -138,24 +142,23 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 
 
 
-
-
-
-
-		_A.registerActor(new PlayerActor(start, cli));
-
-
 		while(!_quit){
-			usleep(50000); // 1/20 sec tick
 
-			// perform any updates
-			_A.onUpdate(_ticks);
+			try{
+				usleep(50000); // 1/20 sec tick
 
-			// handle screen & input
-			cli->paint();
-			if(!cli->processInput())
-				break;
-			_ticks ++;
+				// perform any updates
+				_A.onUpdate(_ticks);
+
+				// handle screen & input
+				cli->paint();
+				if(!cli->processInput())
+					break;
+				_ticks ++;
+			}catch( boost::python::error_already_set ){
+				PyErr_Print();
+				exit(1);
+			}
 		}
 		return 0;
 	}
