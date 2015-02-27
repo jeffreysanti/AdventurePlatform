@@ -9,24 +9,31 @@
 
 #include <AbstractClient.h>
 
+
+void InputReceiver::recvChar(char c){
+
+}
+void InputReceiver::recvString(std::string s){
+
+}
+
 AbstractClient::AbstractClient() {
 	_drawer = NULL;
 	_im = IM_NO_INPUT;
 	_quit = false;
+	_ir = NULL;
 }
 
 AbstractClient::~AbstractClient() {
-	// TODO Auto-generated destructor stub
 }
 
 void AbstractClient::disableInput(){
 	_im = IM_NO_INPUT;
 }
 
-void AbstractClient::enableKeyInput(void (*callback)(void*, char), void *obj){
+void AbstractClient::enableKeyInput(InputReceiver *ir){
 	_im = IM_KEY_ACCEPT;
-	_keyInCallback = callback;
-	_keyInCallbackObj = obj;
+	_ir = ir;
 }
 
 std::string AbstractClient::inputGetLine(){
@@ -44,7 +51,7 @@ Drawer *AbstractClient::getDrawer()
 	return _drawer;
 }
 
-void AbstractClient::asyncInputGetLine(void (*callback)(void*, std::string), void *obj){
+void AbstractClient::asyncInputGetLine(InputReceiver *ir){
 
 }
 

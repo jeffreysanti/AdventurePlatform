@@ -28,9 +28,29 @@ def setup(SM):
 			l.applyTransformation(1, 0)
 			print("TRANS")
 			l.applyTransformation(1, 0)
+	class something(InputReceiver):
+		def __init__(self):
+			InputReceiver.__init__(self)
+
+	class noPass(GatewayActorAttempter, InputReceiver):
+		def __init__(self):
+			GatewayActorAttempter.__init__(self)
+			InputReceiver.__init__(self)
+		def actorAttemptGateway(self, actor, cli):
+			print("NOPASS")
+			drawer = cli.getDrawer()
+			drawer.resetScreen(Color.BLACK)
+			drawer.printFormattedTextCenter(drawer.newLayer(), "You Shall Not Pass")
+			lg = drawer.printFormattedTextCenter(drawer.newLayer(), "[Any Key To Continue]")
+			lg.applyTransformation(0, 6)
+			cli.asyncInputGetLine(self)
+			return False
+		def recvString(self, s):
+			print(s)
 
 	
 	g1.setDisplayer(testGW());
+	g1.setActorAttempter(noPass());
 	
 	print(type(SM.getSpace("startPos")))
 	print(type(testGW()))

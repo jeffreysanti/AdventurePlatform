@@ -11,11 +11,18 @@
 #define ABSTRACTCLIENT_H_
 
 #include "Drawer.h"
+#include <memory>
 
 enum InputMode{
 	IM_NO_INPUT,
 	IM_KEY_ACCEPT,
 	IM_ASYNC_LINE
+};
+
+class InputReceiver{
+public:
+	virtual void recvChar(char c);
+	virtual void recvString(std::string s);
 };
 
 class AbstractClient {
@@ -27,24 +34,19 @@ public:
 	virtual bool processInput();
 
 	virtual void disableInput();
-	virtual void enableKeyInput(void (*callback)(void*, char), void *obj);
+	virtual void enableKeyInput(InputReceiver *ir);
 	virtual std::string inputGetLine();
 
-	virtual void asyncInputGetLine(void (*callback)(void*, std::string), void *obj);
+	virtual void asyncInputGetLine(InputReceiver *ir);
 
-	virtual void quit();
+	void quit();
 
 	Drawer *getDrawer();
 protected:
+	InputReceiver *_ir;
 	Drawer * _drawer;
 	InputMode _im;
 	bool _quit;
-
-	void (*_keyInCallback)(void*, char);
-	void *_keyInCallbackObj;
-
-	void (*_lineInCallback)(void*, std::string);
-	void *_lineInCallbackObj;
 };
 
 #endif /* ABSTRACTCLIENT_H_ */

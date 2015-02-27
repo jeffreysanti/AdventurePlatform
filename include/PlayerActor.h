@@ -12,16 +12,17 @@
 #include <AbstractClient.h>
 #include <string>
 
-class PlayerActor: public Actor {
+class PlayerActor: public Actor, InputReceiver {
 public:
 	PlayerActor(Space *space, AbstractClient *cli);
 	virtual ~PlayerActor();
 
 	void onUpdate(long long tick);
 
-	static void __keyboardHandler(void *self, std::string s);
-
 	void showLocation();
+
+	virtual void recvChar(char c);
+	virtual void recvString(std::string s);
 
 protected:
 

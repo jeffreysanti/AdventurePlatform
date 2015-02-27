@@ -25,6 +25,7 @@ void piExportDrawer(){
     	.def("getHeight", &Drawer::getHeight)
 		.def("printFormattedTextWW", printWW)
 		.def("printFormattedTextCenter", printCenter)
+		.def("resetScreen", &Drawer::resetScreen)
 		;
 }
 

@@ -25,14 +25,14 @@ public:
 	virtual bool processInput();
 
 	virtual void disableInput();
-	virtual void enableKeyInput(void (*callback)(void*,char), void *obj);
+	virtual void enableKeyInput(InputReceiver *ir);
 	virtual std::string inputGetLine();
 
 	std::string ColorToCharSeq(Color fg, Color bg);
 	void setSupportBrightColors(bool b);
 	void promptForColorSupport();
 
-	virtual void asyncInputGetLine(void (*callback)(void*, std::string), void *obj);
+	virtual void asyncInputGetLine(InputReceiver *ir);
 
 	static void lineHandler(char *line);
 

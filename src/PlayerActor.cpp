@@ -30,11 +30,7 @@ PlayerActor::~PlayerActor() {
 }
 
 void PlayerActor::onUpdate(long long tick){
-	_cli->asyncInputGetLine(&PlayerActor::__keyboardHandler, this);
-}
-
-void PlayerActor::__keyboardHandler(void *self, std::string s){
-	((PlayerActor*)self)->keyboardHandler(s);
+	_cli->asyncInputGetLine(this);
 }
 
 void PlayerActor::showLocation(){
@@ -61,6 +57,13 @@ void PlayerActor::keyboardHandler(std::string s){
 			}
 		}
 	}
+}
+
+void PlayerActor::recvChar(char c){
+
+}
+void PlayerActor::recvString(std::string s){
+	keyboardHandler(s);
 }
 
 

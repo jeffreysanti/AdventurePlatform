@@ -202,8 +202,8 @@ void TerminalClient::disableInput(){
 	tcsetattr(0, TCSANOW, &curterm);
 }
 
-void TerminalClient::enableKeyInput(void (*callback)(void*,char), void *obj){
-	AbstractClient::enableKeyInput(callback, obj);
+void TerminalClient::enableKeyInput(InputReceiver *ir){
+	AbstractClient::enableKeyInput(ir);
 	tcgetattr(0, &curterm);
 	curterm.c_lflag &= ~(ICANON | ECHO);
 	tcsetattr(0, TCSANOW, &curterm);
@@ -251,7 +251,7 @@ bool TerminalClient::processInput(){
 			char c;
 			read(0, &c, 1);
 			if(_im == IM_KEY_ACCEPT){
-				_keyInCallback(_keyInCallbackObj, c);
+				_ir->recvChar(c);
 			}
 		}
 	}
@@ -277,10 +277,10 @@ void TerminalClient::lineHandler(char *line){
 	termSelf->paint();
 
 	// call callback
-	(termSelf->_lineInCallback)(termSelf->_lineInCallbackObj, ret);
+	termSelf->_ir->recvString(ret);
 }
 
-void TerminalClient::asyncInputGetLine(void (*callback)(void*, std::string), void *obj){
+void TerminalClient::asyncInputGetLine(InputReceiver *ir){
 	if(_im == IM_ASYNC_LINE)
 		return;
 
@@ -296,8 +296,7 @@ void TerminalClient::asyncInputGetLine(void (*callback)(void*, std::string), voi
 	preLine.c_lflag |= (ICANON | ECHO);
 	tcsetattr(0, TCSANOW, &preLine);
 
-	_lineInCallbackObj = obj;
-	_lineInCallback = callback;
+	_ir = ir;
 
 	termSelf = this;
 	rl_callback_handler_install(buf, lineHandler);
