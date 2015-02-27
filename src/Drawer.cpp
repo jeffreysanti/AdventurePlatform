@@ -130,7 +130,7 @@ DrawLayerGroup Drawer::printFormattedTextWW(DrawLayer *layer, const char* format
 }
 
 DrawLayerGroup Drawer::printFormattedTextWW(DrawLayer *layer, std::string s){
-	printFormattedTextWW(layer, "%s", s.c_str());
+	return printFormattedTextWW(layer, "%s", s.c_str());
 }
 
 DrawLayerGroup Drawer::printFormattedTextCenter(DrawLayer *layer, const char* format, ... ){
@@ -213,7 +213,7 @@ DrawLayerGroup Drawer::printFormattedTextCenter(DrawLayer *layer, const char* fo
 }
 
 DrawLayerGroup Drawer::printFormattedTextCenter(DrawLayer *layer, std::string s){
-	printFormattedTextCenter(layer, "%s", s.c_str());
+	return printFormattedTextCenter(layer, "%s", s.c_str());
 }
 
 void Drawer::onLayerModified(){

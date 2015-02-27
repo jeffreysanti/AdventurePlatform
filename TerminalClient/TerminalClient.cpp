@@ -69,6 +69,7 @@ TerminalClient::TerminalClient() {
 
 TerminalClient::~TerminalClient() {
 	rl_callback_handler_remove();
+	handleSignal(0);
 	delete _drawer;
 }
 

@@ -16,6 +16,7 @@ PlayerActor::PlayerActor(Space *space, AbstractClient *cli) : Actor(space) {
 	_class = "player";
 	_cli = cli;
 
+	_cli->getDrawer()->resetScreen(BLACK);
 	DrawLayerGroup grp = _cli->getDrawer()->printFormattedTextCenter(_cli->getDrawer()->newLayer(),
 			"<D>Welcome Player!<7> Enter Your Name");
 	grp.applyTransformation(0, 4);

@@ -21,7 +21,13 @@ def setup(SM):
 			print("Initted testGW")
 		
 		def outputToDrawer(self, draw, layer):
-			draw.printFormattedTextWW(layer, "Hello!!!")
+			print(draw.getWidth())
+			print(layer.getEffectiveWidth())
+			l = draw.printFormattedTextWW(layer, "Hello!!!")
+			print("GOT LAYER")
+			l.applyTransformation(1, 0)
+			print("TRANS")
+			l.applyTransformation(1, 0)
 
 	
 	g1.setDisplayer(testGW());
