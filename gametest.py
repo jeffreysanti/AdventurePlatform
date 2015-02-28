@@ -2,7 +2,11 @@ from AdventurePlatform import *
 
 
 
-def setup(SM):
+def setup(SM, IM, AM):
+	
+	IM.registerVerb("look")
+	IM.registerVerb("use")
+	
 	s2 = SM.newSpace("mainSt")
 	s2.setName("Main Street")
 	s2.setDesc("Buildings line the north and south ends of Main Street. Westbound, there is")
@@ -14,6 +18,24 @@ def setup(SM):
 	g1.addDirectionString("main st");
 	g1.addDirectionString("main st.");
 	g1.addDirectionString("main");
+	
+	
+	class AppleDisplayer(ItemDisplayer):
+		def outputToDrawer(self, draw, layer):
+			draw.printFormattedTextWW(layer, "My Apples!!!")
+	class AppleUser(ItemUser):
+		def useItem(self, vb, actor, cli):
+			cli.setDisplayMode(DisplayMode.CustomTimed, 40)
+			drawer = cli.getDrawer()
+			drawer.resetScreen(Color.BLACK)
+			drawer.printFormattedTextCenter(drawer.newLayer(), "Yummy Apple")
+	
+	i = IM.newItem()
+	i.setPrimaryName("Juicy Apples")
+	i.setDisplayer(AppleDisplayer())
+	i.setUser(AppleUser())
+	s2.addItem(i)
+	
 
 	class testGW(GatewayDisplayer):
 		def __init__(self):
@@ -21,12 +43,8 @@ def setup(SM):
 			print("Initted testGW")
 		
 		def outputToDrawer(self, draw, layer):
-			print(draw.getWidth())
-			print(layer.getEffectiveWidth())
 			l = draw.printFormattedTextWW(layer, "Hello!!!")
-			print("GOT LAYER")
 			l.applyTransformation(1, 0)
-			print("TRANS")
 			l.applyTransformation(1, 0)
 	class something(InputReceiver):
 		def __init__(self):
@@ -37,20 +55,25 @@ def setup(SM):
 			GatewayActorAttempter.__init__(self)
 			InputReceiver.__init__(self)
 		def actorAttemptGateway(self, actor, cli):
-			print("NOPASS")
+			cli.setDisplayMode(DisplayMode.Custom, 0)
 			drawer = cli.getDrawer()
 			drawer.resetScreen(Color.BLACK)
 			drawer.printFormattedTextCenter(drawer.newLayer(), "You Shall Not Pass")
 			lg = drawer.printFormattedTextCenter(drawer.newLayer(), "[Any Key To Continue]")
 			lg.applyTransformation(0, 6)
+			self.cli = cli
+			self.actor = actor
 			cli.asyncInputGetLine(self)
 			return False
 		def recvString(self, s):
-			print(s)
+			self.cli.setDisplayMode(DisplayMode.CustomTimed, 40)
+			drawer = self.cli.getDrawer()
+			drawer.resetScreen(Color.BLACK)
+			drawer.printFormattedTextCenter(drawer.newLayer(), s)
 
 	
 	g1.setDisplayer(testGW());
-	g1.setActorAttempter(noPass());
+	#g1.setActorAttempter(noPass());
 	
 	print(type(SM.getSpace("startPos")))
 	print(type(testGW()))

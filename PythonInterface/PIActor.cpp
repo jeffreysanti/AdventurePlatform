@@ -4,7 +4,7 @@
 using namespace boost::python;
 
 
-#include "Actor.h"
+#include "ActorManager.h"
 
 
 class ActorWrap : public Actor, public wrapper<Actor>
@@ -19,6 +19,9 @@ public:
 	}
 };
 
+void   	(ActorManager::*regUnNamedA)(Actor*) = &ActorManager::registerActor;
+void   	(ActorManager::*regNamedA)(std::string, Actor*) = &ActorManager::registerActor;
+
 
 void piExportActor(){
     class_<ActorWrap, boost::noncopyable>("Actor",init<Space*>())
@@ -26,6 +29,12 @@ void piExportActor(){
         .def("setSpace", &ActorWrap::setSpace)
 		.def("onUpdate", pure_virtual(&ActorWrap::setSpace))
 		;
+
+	void registerActor(Actor *actor);
+    class_<ActorManager>("ActorManager")
+		.def("registerActor", regUnNamedA)
+		.def("registerUniqueActor", regNamedA)
+	;
 }
 
 

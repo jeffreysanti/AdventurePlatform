@@ -34,12 +34,12 @@ public:
 protected:
 
 	std::string _class;
-	std::string _uuid;
-	bool _unique;
 	Space *_space;
 
 private:
 	void setUniqueUUID(bool unique, std::string uuid);
+	std::string _uuid;
+	bool _unique;
 };
 
 

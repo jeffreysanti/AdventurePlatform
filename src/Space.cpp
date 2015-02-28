@@ -41,10 +41,24 @@ void Space::addGatewayOut(Gateway *gateway){
 	std::sort(_D.begin(), _D.end(), Gateway::compareGatewayStrings);
 }
 
+void Space::addItem(Item *item){
+	item->setSpace(this);
+	_I.push_back(item);
+}
+
+
 Gateway *Space::findGatewayOut(std::string in){
 	for(int i=0; i<_D.size(); i++){
 		if(_D[i]->testDirection(in)){
 			return _D[i];
+		}
+	}
+	return NULL;
+}
+Item *Space::findItemIn(std::string in){
+	for(int i=0; i<_I.size(); i++){
+		if(_I[i]->testName(in)){
+			return _I[i];
 		}
 	}
 	return NULL;
@@ -88,6 +102,12 @@ void Space::outputToDrawer(Drawer *draw){
 		DrawLayer *exitLayer = draw->newLayer(layerExits->getEffectiveWidth(), 1);
 		exitLayer->setOffset(layerExits->getOffsetX(), layerExits->getOffsetY()+i);
 		_D[i]->outputToDrawer(draw, exitLayer);
+	}
+
+	for(int i=0; i<_I.size(); i++){
+		DrawLayer *itemLayer = draw->newLayer(layerFind->getEffectiveWidth(), 1);
+		itemLayer->setOffset(layerFind->getOffsetX(), layerFind->getOffsetY()+i);
+		_I[i]->outputToDrawer(draw, itemLayer);
 	}
 }
 

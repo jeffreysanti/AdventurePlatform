@@ -12,6 +12,7 @@
 Actor::Actor(Space *space) {
 	// TODO Auto-generated constructor stub
 	_space = space;
+	_unique = false;
 }
 
 Actor::~Actor() {

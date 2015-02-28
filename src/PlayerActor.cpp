@@ -12,17 +12,17 @@
 #include <boost/algorithm/string.hpp>
 #include "Gateway.h"
 
-PlayerActor::PlayerActor(Space *space, AbstractClient *cli) : Actor(space) {
+PlayerActor::PlayerActor(Space *space, AbstractClient *cli, ItemManager *im) : Actor(space) {
 	_class = "player";
 	_cli = cli;
+	_IM = im;
 
 	_cli->getDrawer()->resetScreen(BLACK);
 	DrawLayerGroup grp = _cli->getDrawer()->printFormattedTextCenter(_cli->getDrawer()->newLayer(),
 			"<D>Welcome Player!<7> Enter Your Name");
 	grp.applyTransformation(0, 4);
 	_name = _cli->inputGetLine();
-	//_cli->asyncInputGetLine(&PlayerActor::__keyboardHandler, this);
-	showLocation();
+	_oldDM = DM_CUSTOM_HOLD;
 }
 
 PlayerActor::~PlayerActor() {
@@ -30,21 +30,46 @@ PlayerActor::~PlayerActor() {
 }
 
 void PlayerActor::onUpdate(long long tick){
-	_cli->asyncInputGetLine(this);
+	DisplayMode dmNew = _cli->getDisplayMode();
+	if(dmNew != _oldDM && dmNew == DM_PLAYER_NAV){
+		showLocation();
+		_cli->asyncInputGetLine(this);
+	}
+	_oldDM = dmNew;
 }
 
 void PlayerActor::showLocation(){
 	_space->outputToDrawer(_cli->getDrawer());
 }
 
-void PlayerActor::keyboardHandler(std::string s){
+void PlayerActor::recvChar(char c){
+
+}
+void PlayerActor::recvString(std::string s){
 	boost::algorithm::to_lower(s);
 	boost::algorithm::trim(s);
 
+	std::string firstWord = s;
+	if(firstWord.find(' ') != s.npos){
+		boost::algorithm::erase_tail(firstWord, firstWord.length()-firstWord.find(' '));
+	}
+
 	if(s == "exit" || s == "q" || s == "quit"){
 		_cli->quit();
+		return;
 	}else if(s == "help" || s == "h"){
 
+	}else if(_IM->isVerb(firstWord)){
+		std::string subject = s;
+		boost::algorithm::erase_head(subject, subject.find(' ')+1);
+		boost::algorithm::trim(subject);
+		Item *item = _space->findItemIn(subject);
+		if(item != NULL){
+			item->onUse(firstWord, this, _cli);
+		}
+		if(_cli->getDisplayMode() == DM_PLAYER_NAV){
+			showLocation();
+		}
 	}else{ // assume 'go' command
 		if(boost::algorithm::starts_with(s, "go ")){ // remove "go" section
 			boost::algorithm::erase_head(s, 2);
@@ -52,18 +77,15 @@ void PlayerActor::keyboardHandler(std::string s){
 		}
 		Gateway *nav = _space->findGatewayOut(s);
 		if(nav != NULL){
-			if(nav->actorAttemptGateway(this, _cli)){
-				showLocation();
-			}
+			nav->actorAttemptGateway(this, _cli);
+		}
+		if(_cli->getDisplayMode() == DM_PLAYER_NAV){
+			showLocation();
 		}
 	}
-}
-
-void PlayerActor::recvChar(char c){
-
-}
-void PlayerActor::recvString(std::string s){
-	keyboardHandler(s);
+	if(_cli->getDisplayMode() == DM_PLAYER_NAV){
+		_cli->asyncInputGetLine(this);
+	}
 }
 
 

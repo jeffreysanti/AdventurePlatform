@@ -22,6 +22,9 @@ AbstractClient::AbstractClient() {
 	_im = IM_NO_INPUT;
 	_quit = false;
 	_ir = NULL;
+	_dm = DM_PLAYER_NAV;
+	_time = 0;
+	_dmSwitchTime = 0;
 }
 
 AbstractClient::~AbstractClient() {
@@ -53,6 +56,25 @@ Drawer *AbstractClient::getDrawer()
 
 void AbstractClient::asyncInputGetLine(InputReceiver *ir){
 
+}
+
+void AbstractClient::updateTime(long long time){
+	_time = time;
+	if(_dm == DM_CUSTOM_TIMED && _time >= _dmSwitchTime){
+		this->disableInput();
+		_dm = DM_PLAYER_NAV;
+	}
+}
+long long AbstractClient::getTime(){
+	return _time;
+}
+void AbstractClient::setDisplayMode(DisplayMode dm, long long switchTime){
+	this->disableInput();
+	_dmSwitchTime = switchTime + _time;
+	_dm = dm;
+}
+DisplayMode AbstractClient::getDisplayMode(){
+	return _dm;
 }
 
 void AbstractClient::quit(){

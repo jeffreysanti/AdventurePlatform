@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include "Drawer.h"
+#include "Item.h"
 
 class Gateway;
 
@@ -29,10 +30,12 @@ public:
 	std::string getUUID();
 
 	void addGatewayOut(Gateway *gateway);
+	void addItem(Item *item);
 
 	Gateway *findGatewayOut(std::string in);
+	Item *findItemIn(std::string in);
 
-	virtual void outputToDrawer(Drawer *draw);
+	void outputToDrawer(Drawer *draw);
 
 private:
 
@@ -42,6 +45,7 @@ private:
 	std::string _desc;
 
 	std::vector<Gateway*> _D;
+	std::vector<Item*> _I;
 
 };
 

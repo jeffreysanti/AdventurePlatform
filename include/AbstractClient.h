@@ -19,6 +19,12 @@ enum InputMode{
 	IM_ASYNC_LINE
 };
 
+enum DisplayMode{
+	DM_PLAYER_NAV,
+	DM_CUSTOM_HOLD,
+	DM_CUSTOM_TIMED
+};
+
 class InputReceiver{
 public:
 	virtual void recvChar(char c);
@@ -39,14 +45,20 @@ public:
 
 	virtual void asyncInputGetLine(InputReceiver *ir);
 
+	void updateTime(long long time);
+	long long getTime();
+	void setDisplayMode(DisplayMode dm, long long switchTime=0);
+	DisplayMode getDisplayMode();
 	void quit();
-
 	Drawer *getDrawer();
 protected:
 	InputReceiver *_ir;
 	Drawer * _drawer;
 	InputMode _im;
 	bool _quit;
+	DisplayMode _dm;
+	long long _dmSwitchTime;
+	long long _time;
 };
 
 #endif /* ABSTRACTCLIENT_H_ */

@@ -4,11 +4,11 @@
 using namespace boost::python;
 
 
-#include "Space.h"
+#include "SpaceManager.h"
 #include "Gateway.h"
 
 
-class SpaceWrap : public Space, public wrapper<Space>
+/*class SpaceWrap : public Space, public wrapper<Space>
 {
 public:
 
@@ -25,18 +25,24 @@ public:
 	}
 	void default_outputToDrawer(Drawer *draw) { this->Space::outputToDrawer(draw); }
 };
-
+*/
 
 void piExportSpace(){
-    class_<SpaceWrap, boost::noncopyable>("Space",init<std::string>())
-        .def("setName", &SpaceWrap::setName)
-		.def("getName", &SpaceWrap::getName)
-		.def("setDesc", &SpaceWrap::setDesc)
-		.def("getDesc", &SpaceWrap::getDesc)
-		.def("getUUID", &SpaceWrap::getUUID)
-		.def("addGatewayOut", &SpaceWrap::addGatewayOut)
-		.def("outputToDrawer", &Space::outputToDrawer, &SpaceWrap::default_outputToDrawer)
+    class_<Space, boost::noncopyable>("Space",init<std::string>())
+        .def("setName", &Space::setName)
+		.def("getName", &Space::getName)
+		.def("setDesc", &Space::setDesc)
+		.def("getDesc", &Space::getDesc)
+		.def("getUUID", &Space::getUUID)
+		.def("addGatewayOut", &Space::addGatewayOut)
+		.def("outputToDrawer", &Space::outputToDrawer)
+		.def("addItem", &Space::addItem)
     ;
+    class_<SpaceManager>("SpaceManager")
+		.def("newSpace", &SpaceManager::newSpace, return_value_policy<reference_existing_object>())
+		.def("newGateway", &SpaceManager::newGateway, return_value_policy<reference_existing_object>())
+		.def("getSpace", &SpaceManager::getSpace,  return_value_policy<reference_existing_object>())
+	;
 }
 
 

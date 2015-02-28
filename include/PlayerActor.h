@@ -11,10 +11,11 @@
 #include <Actor.h>
 #include <AbstractClient.h>
 #include <string>
+#include "ItemManager.h"
 
 class PlayerActor: public Actor, InputReceiver {
 public:
-	PlayerActor(Space *space, AbstractClient *cli);
+	PlayerActor(Space *space, AbstractClient *cli, ItemManager *im);
 	virtual ~PlayerActor();
 
 	void onUpdate(long long tick);
@@ -26,10 +27,10 @@ public:
 
 protected:
 
-	void keyboardHandler(std::string s);
-
 	AbstractClient *_cli;
 	std::string _name;
+	DisplayMode _oldDM;
+	ItemManager *_IM;
 
 };
 

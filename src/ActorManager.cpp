@@ -18,7 +18,6 @@ ActorManager::ActorManager() {
 }
 
 ActorManager::~ActorManager() {
-	// TODO Auto-generated destructor stub
 	for(int i=0; i<_A.size(); i++){
 		delete _A[i];
 	}

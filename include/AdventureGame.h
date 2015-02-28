@@ -14,6 +14,7 @@
 #include "AbstractClient.h"
 #include "ActorManager.h"
 #include "SpaceManager.h"
+#include "ItemManager.h"
 
 enum RunType{
 	RT_SERVER,
@@ -38,6 +39,7 @@ private:
 
 	ActorManager _A;
 	SpaceManager _S;
+	ItemManager _I;
 };
 
 #endif /* ADVENTUREGAME_H_ */

@@ -9,6 +9,30 @@
 #include <Space.h>
 #include <algorithm>
 
+
+
+
+void GatewayDisplayer::outputToDrawer(Drawer *draw, DrawLayer *layer){
+	std::string sOutput = " * " + gw->getPrimaryDirection();
+	draw->printFormattedTextWW(layer, sOutput.c_str());
+}
+
+GatewayDisplayer::~GatewayDisplayer(){
+
+}
+
+bool GatewayActorAttempter::actorAttemptGateway(Actor *actor, AbstractClient *cli){
+	actor->setSpace(gw->getDestination());
+	return true;
+}
+
+GatewayActorAttempter::~GatewayActorAttempter(){
+
+}
+
+
+
+
 Gateway::Gateway(std::string uuid, Space *src, Space *dest, std::string primaryDirection) {
 	_uuid = uuid;
 	_src = src;
@@ -16,7 +40,9 @@ Gateway::Gateway(std::string uuid, Space *src, Space *dest, std::string primaryD
 	_primaryDirection = primaryDirection;
 	_enabled = true;
 	_displayer = new GatewayDisplayer();
+	_displayer->gw = this;
 	_actorAttempter = new GatewayActorAttempter();
+	_actorAttempter->gw = this;
 }
 
 Gateway::~Gateway() {
@@ -103,23 +129,6 @@ void Gateway::setActorAttempter(std::auto_ptr<GatewayActorAttempter> attempt){
 
 
 
-void GatewayDisplayer::outputToDrawer(Drawer *draw, DrawLayer *layer){
-	std::string sOutput = " * " + gw->getPrimaryDirection();
-	draw->printFormattedTextWW(layer, sOutput.c_str());
-}
-
-GatewayDisplayer::~GatewayDisplayer(){
-
-}
-
-bool GatewayActorAttempter::actorAttemptGateway(Actor *actor, AbstractClient *cli){
-	actor->setSpace(gw->getDestination());
-	return true;
-}
-
-GatewayActorAttempter::~GatewayActorAttempter(){
-
-}
 
 
 

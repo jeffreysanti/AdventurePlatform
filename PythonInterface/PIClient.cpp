@@ -77,6 +77,13 @@ public:
 };
 
 void piExportClient(){
+
+	enum_<DisplayMode>("DisplayMode")
+		    .value("PlayerNavigation", DM_PLAYER_NAV)
+		    .value("Custom", DM_CUSTOM_HOLD)
+			.value("CustomTimed", DM_CUSTOM_TIMED)
+			;
+
     class_<AbstractClientWrap, boost::noncopyable>("AbstractClient")
 		.def("paint", &AbstractClient::paint, &AbstractClientWrap::default_paint)
 		.def("disableInput", &AbstractClient::disableInput, &AbstractClientWrap::default_disableInput)
@@ -85,6 +92,9 @@ void piExportClient(){
         .def("asyncInputGetLine", &AbstractClient::asyncInputGetLine, &AbstractClientWrap::default_asyncInputGetLine)
         .def("quit", &AbstractClientWrap::quit)
         .def("getDrawer", &AbstractClientWrap::getDrawer, return_value_policy<reference_existing_object>())
+		.def("getTime", &AbstractClientWrap::getTime)
+		.def("setDisplayMode", &AbstractClientWrap::setDisplayMode)
+		.def("getDisplayMode", &AbstractClientWrap::getDisplayMode)
 		;
 
     class_<InputReceiver, std::auto_ptr<InputReceiverWrap>, boost::noncopyable>("InputReceiver")
