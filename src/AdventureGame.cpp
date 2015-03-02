@@ -12,8 +12,6 @@
 
 #include "PlayerActor.h"
 
-#include <boost/python.hpp>
-#include <Python.h>
 
 
 AdventureGame::AdventureGame(RunType rt) {
@@ -98,7 +96,7 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 
 		printf("\033[1;1fSTART:\n");
 */
-		PyImport_AppendInittab( "AdventurePlatform", &initAdventurePlatform );
+		/*PyImport_AppendInittab( "AdventurePlatform", &initAdventurePlatform );
 
 
 		PyObject *pName, *pModule, *pDict, *pFunc;
@@ -135,19 +133,21 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 					boost::python::ptr(&_A));
 
 
-			_A.registerActor(new PlayerActor(start, cli, &_I));
+
 
 		}catch( boost::python::error_already_set ){
 			PyErr_Print();
 			exit(1);
 		}
+*/
 
+		_A.registerActor(new PlayerActor(start, cli, &_I));
 
 
 
 		while(!_quit){
 
-			try{
+			//try{
 				usleep(50000); // 1/20 sec tick
 
 				// perform any updates
@@ -159,10 +159,10 @@ int AdventureGame::mainLoop(AbstractClient *cli)
 				if(!cli->processInput())
 					break;
 				_ticks ++;
-			}catch( boost::python::error_already_set ){
+			/*}catch( boost::python::error_already_set ){
 				PyErr_Print();
 				exit(1);
-			}
+			}*/
 		}
 		return 0;
 	}

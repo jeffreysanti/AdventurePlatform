@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <memory>
 #include "Drawer.h"
 #include "Item.h"
 

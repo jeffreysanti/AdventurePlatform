@@ -9,13 +9,19 @@
 
 #include "AdventureGame.h"
 #include <cstdio>
-//#include <boost/asio.hpp>
-//#include <boost/asio.hpp>
-//#include <boost/python.hpp>
-//#include <Python.h>
-
 #include "TerminalClient/TerminalClient.h"
 #include "TerminalClient/TestingClient.h"
+
+#include "angelscript.h"
+
+
+/*
+ *
+ *    ***** ANGLESCRIPT REQUIRES: -fno-strict-aliasing for GNU C++
+ *
+ *
+ */
+
 
 
 //using namespace boost::python;

@@ -25,8 +25,8 @@ ItemManager::~ItemManager() {
 	_IU.clear();
 }
 
-Item *ItemManager::newItem(std::string uuid){
-	Item *item = new Item;
+void ItemManager::registerItem(std::string uuid, std::auto_ptr<Item> itm){
+	Item *item = itm.release();
 	if(uuid == ""){
 		_I.push_back(item);
 		item->setUniqueUUID(false, "");
@@ -38,10 +38,9 @@ Item *ItemManager::newItem(std::string uuid){
 		_IU[uuid] = item;
 		item->setUniqueUUID(true, uuid);
 	}
-	return item;
 }
-Item *ItemManager::newItem(){
-	return newItem("");
+void ItemManager::registerItem(std::auto_ptr<Item> itm){
+	registerItem("", itm);
 }
 
 void ItemManager::registerVerb(std::string vb){

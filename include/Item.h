@@ -19,22 +19,6 @@ class Space;
 class Actor;
 class Item;
 
-class ItemDisplayer{
-public:
-	virtual ~ItemDisplayer();
-	virtual void outputToDrawer(Drawer *draw, DrawLayer *layer);
-	Item *item;
-};
-
-class ItemUser{
-public:
-	virtual ~ItemUser();
-	virtual void useItem(std::string vb, Actor *actor, AbstractClient *cli);
-	Item *item;
-};
-
-
-
 class Item {
 
 	friend class ItemManager;
@@ -48,17 +32,14 @@ public:
 	void setSpace(Space *space);
 	Space *getSpace();
 
-	void setPrimaryName(std::string s);
+	void setPrimaryName(const std::string &s);
 	std::string getPrimaryName();
 	void addNameString(std::string s);
 
 	bool testName(std::string s);
 
-	void outputToDrawer(Drawer *draw, DrawLayer *layer);
-	void setDisplayer(std::auto_ptr<ItemDisplayer> disp);
-
-	void onUse(std::string vb, Actor *actor, AbstractClient *cli);
-	void setUser(std::auto_ptr<ItemUser> user);
+	virtual void outputToDrawer(Drawer *draw, DrawLayer *layer);
+	virtual void onUse(std::string vb, Actor *actor, AbstractClient *cli);
 
 protected:
 
@@ -75,9 +56,6 @@ private:
 
 	std::string _uuid;
 	bool _unique;
-
-	ItemDisplayer *_displayer;
-	ItemUser *_user;
 };
 
 #endif /* INCLUDE_ITEM_H_ */

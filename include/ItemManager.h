@@ -11,6 +11,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <memory>
 #include "Item.h"
 
 
@@ -20,8 +21,8 @@ public:
 	ItemManager();
 	virtual ~ItemManager();
 
-	Item *newItem(std::string uuid);
-	Item *newItem();
+	void registerItem(std::string uuid, std::auto_ptr<Item>);
+	void registerItem(std::auto_ptr<Item>);
 
 	void registerVerb(std::string vb);
 	bool isVerb(std::string vb);

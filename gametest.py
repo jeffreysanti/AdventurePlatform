@@ -1,5 +1,6 @@
 from AdventurePlatform import *
 
+import inspect
 
 
 def setup(SM, IM, AM):
@@ -20,21 +21,28 @@ def setup(SM, IM, AM):
 	g1.addDirectionString("main");
 	
 	
-	class AppleDisplayer(ItemDisplayer):
+	class Apple(Item):
+		def __init__(self):
+			Item.__init__(self)
 		def outputToDrawer(self, draw, layer):
 			draw.printFormattedTextWW(layer, "My Apples!!!")
-	class AppleUser(ItemUser):
 		def useItem(self, vb, actor, cli):
 			cli.setDisplayMode(DisplayMode.CustomTimed, 40)
 			drawer = cli.getDrawer()
 			drawer.resetScreen(Color.BLACK)
-			drawer.printFormattedTextCenter(drawer.newLayer(), "Yummy Apple")
+			drawer.printFormattedTextCenter(drawer.newLayer(), "Yummy Apple")		
 	
-	i = IM.newItem()
+	i = Apple()
+	print(type(i))
+	print(type(Item))
+	print(type(Apple))
+	print(inspect.getmro(Apple))
+	print(type(i))
 	i.setPrimaryName("Juicy Apples")
-	i.setDisplayer(AppleDisplayer())
-	i.setUser(AppleUser())
-	s2.addItem(i)
+	print(type(i))
+	#s2.addItem(i)
+	print(type(i))
+	IM.registerItem(i)
 	
 
 	class testGW(GatewayDisplayer):
